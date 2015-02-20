@@ -1,0 +1,35 @@
+features <- read.table("/Users/tiagoassano/Documents/UCI HAR Dataset/features.txt")
+labels <- read.table("/Users/tiagoassano/Documents/UCI HAR Dataset/activity_labels.txt")
+header <- (features[,2])
+header_clean_1 <- gsub("-", "", header)
+data_1 <- read.table("/Users/tiagoassano/Documents/UCI HAR Dataset/test/X_test.txt")
+data_2 <- read.table("/Users/tiagoassano/Documents/UCI HAR Dataset/test/Y_test.txt")
+data_3 <- read.table("/Users/tiagoassano/Documents/UCI HAR Dataset/test/subject_test.txt")
+data_4 <- read.table("/Users/tiagoassano/Documents/UCI HAR Dataset/train/X_train.txt")
+data_5 <- read.table("/Users/tiagoassano/Documents/UCI HAR Dataset/train/Y_train.txt")
+data_6 <- read.table("/Users/tiagoassano/Documents/UCI HAR Dataset/train/subject_train.txt")
+data_7 <- rbind(data_1, data_4)
+colnames(data_7) <- header_clean_1
+mean_data <- data_7[grep("mean", header_clean_1)]
+std_data <- data_7[grep("std", header_clean_1)]
+mean_std_data <- cbind(mean_data, std_data)
+data_8 <- rbind(data_2, data_5)
+activities <- data_8$V1
+activities_1 <- gsub("1", labels$V2[1], activities)
+activities_2 <- gsub("2", labels$V2[2], activities_1)
+activities_3 <- gsub("3", labels$V2[3], activities_2)
+activities_4 <- gsub("4", labels$V2[4], activities_3)
+activities_5 <- gsub("5", labels$V2[5], activities_4)
+activities_6 <- gsub("6", labels$V2[6], activities_5)
+data_9 <-rbind(data_3, data_6)
+data_9_fact <- as.factor(data_9$V1)
+data_10 <- cbind(mean_std_data, activities_6)
+data_11 <- cbind(data_10, data_9_fact)
+mean_std_header <- as.character(colnames(mean_std_data))
+new_header <- c(mean_std_header, "activities_labels", "patient_number")
+fact_header <- as.factor(new_header)
+colnames(data_11) <- fact_header
+new_data <- melt(data_11, id.vars = c("activities_labels", "patient_number"))
+tidy_data <- dcast(new_data, variable ~ activities_labels + patient_number, mean)
+write.table (tidy_data, file = "tidy_data_data_science_spec.txt", row.name=FALSE)
+
