@@ -30,6 +30,6 @@ new_header <- c(mean_std_header, "activities_labels", "patient_number")
 fact_header <- as.factor(new_header)
 colnames(data_11) <- fact_header
 new_data <- melt(data_11, id.vars = c("activities_labels", "patient_number"))
-tidy_data <- dcast(new_data, variable ~ activities_labels + patient_number, mean)
+tidy_data <- dcast(new_data, activities_labels + patient_number ~ variable, mean)
 write.table (tidy_data, file = "tidy_data_data_science_spec.txt", row.name=FALSE)
 
